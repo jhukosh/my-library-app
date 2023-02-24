@@ -44,7 +44,7 @@ export default function Index() {
   // );
   const search = useLoaderData();
   return (
-    <main className="relative h-full min-h-screen bg-white">
+    <main className="relative h-full w-full flex flex-col justify-center items-center min-h-screen bg-white">
       {/* Body */}
       <div className="flex h-[50%] flex-col items-center justify-center">
         <h1 className="text-xl font-bold">Books app</h1>
