@@ -12,8 +12,12 @@ datasource db {
 
 model Book {
   id        String   @id @default(uuid())
-  name      String
-  completed Boolean
+  title      String
+  description String
+  author String
+  publisher String
+  year Int
+  read Boolean
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
