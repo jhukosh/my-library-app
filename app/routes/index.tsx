@@ -1,5 +1,6 @@
 import { LoaderFunction } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Header } from "~/components/Header";
 import { Book } from "~/domain/book/Book";
 import { getBooks } from "~/domain/book/BookPublicApi";
 
@@ -44,35 +45,38 @@ export default function Index() {
   // );
   const search = useLoaderData();
   return (
-    <main className="relative h-full w-full flex flex-col justify-center items-center min-h-screen bg-white">
-      {/* Body */}
-      <div className="flex h-[50%] flex-col items-center justify-center">
+    <>
+      <Header/>
+      <main className="relative h-full w-full flex flex-col justify-center items-center min-h-screen bg-white">
+        {/* Body */}
         <h1 className="text-xl font-bold">Books app</h1>
-        <Form reloadDocument method="get" className="mt-4 w-full sm:w-1/2">
-          <label className="flex flex-col py-2 font-bold">
-            <input
-              type="text"
-              name="search"
-              placeholder="Search by title or author"
-              className="rounded border-2 py-2"
-            />
-          </label>
-        </Form>
-      </div>
+        <div className="flex w-full flex-col items-center justify-center">
+          <Form reloadDocument method="get" className="my-4 w-full sm:w-1/2">
+            <label className="flex flex-col py-2 font-bold">
+              <input
+                type="text"
+                name="search"
+                placeholder="Search by title or author"
+                className="rounded border-2 p-2"
+              />
+            </label>
+          </Form>
+        </div>
 
-      <div className="grid grid-cols-4 gap-4">
-        {search
-          ? search.map((b: Book) => (
-              <Link key={b.id} to={`/book/${b.id}`}>
-                {b.volumeInfo.title}
-                <img
-                  src={b.volumeInfo.imageLinks?.smallThumbnail}
-                  alt={`Cover of ${b.volumeInfo.title}`}
-                />
-              </Link>
-            ))
-          : null}
-      </div>
-    </main>
+        <div className="grid grid-cols-4 gap-4">
+          {search
+            ? search.map((b: Book) => (
+                <Link key={b.id} to={`/book/${b.id}`}>
+                  {b.volumeInfo.title}
+                  <img
+                    src={b.volumeInfo.imageLinks?.smallThumbnail}
+                    alt={`Cover of ${b.volumeInfo.title}`}
+                  />
+                </Link>
+              ))
+            : null}
+        </div>
+      </main>
+    </>
   );
 }
