@@ -8,6 +8,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import stylesheet from "~/tailwind.css";
+import { Header } from "./components/Header";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -26,7 +27,8 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="p-2">
+      <body>
+        <Header />
         <Outlet />
         <ScrollRestoration />
         <Scripts />
