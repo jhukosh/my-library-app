@@ -65,19 +65,22 @@ export default function Index() {
         </div>
 
         {search ? (
-          <div className="grid grid-cols-3 gap-8 place-items-center px-8">
+          <div className="grid grid-cols-3 gap-8 md:gap-24 md:px-40 px-16 auto-rows-fr mt-16">
             {search.map((b: Book) => {
               const imgPath =
-                b.volumeInfo.imageLinks?.smallThumbnail ?? NoBookFound;
+                b.volumeInfo.imageLinks?.thumbnail ?? NoBookFound;
               return (
-                <div className="w-full h-[20%] bg-white border border-slate-200 rounded-lg shadow dark:bg-slate-500 dark:border-slate-200">
+                <div
+                  key={b.id}
+                  className="w-full border border-slate-200 rounded-lg shadow bg-slate-50"
+                >
                   <img
-                    className="rounded-t-lg w-full"
+                    className="rounded-t-lg w-full h-80 object-cover object-top"
                     src={imgPath}
                     alt={`Cover of ${b.volumeInfo.title}`}
                   />
                   <div className="p-5">
-                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
                       {b.volumeInfo.title}
                     </h5>
                     <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
