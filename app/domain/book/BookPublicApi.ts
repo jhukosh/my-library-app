@@ -3,7 +3,7 @@ import type { Book } from "./Book";
 
 const BASE_URL = "https://www.googleapis.com/books/v1/volumes";
 
-export const getBooks = async (search: string): Promise<Book[]> => {
+export const getBooks = async (search: string | undefined): Promise<Book[]> => {
   const apiKey = process.env.GOOGLE_API_KEY;
   let response;
   try {
