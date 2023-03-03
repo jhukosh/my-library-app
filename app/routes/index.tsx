@@ -43,7 +43,7 @@ export default function Index() {
   //     </ul>
   //   </div>
   // );
-  const search = useLoaderData();
+  const books = useLoaderData();
   return (
     <>
       <main className="relative h-full w-full flex flex-col items-center bg-white">
@@ -63,11 +63,10 @@ export default function Index() {
           </Form>
         </div>
 
-        {search ? (
+        {books ? (
           <div className="grid grid-cols-3 gap-8 md:gap-24 md:px-40 px-16 auto-rows-fr mt-16">
-            {search.map((b: Book) => {
-              const imgPath =
-                b.volumeInfo.imageLinks?.thumbnail ?? NoBookFound;
+            {books.map((b: Book) => {
+              const imgPath = b.volumeInfo.imageLinks?.thumbnail ?? NoBookFound;
               return (
                 <div
                   key={b.id}

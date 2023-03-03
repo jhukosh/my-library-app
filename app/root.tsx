@@ -1,4 +1,8 @@
-import type { LinksFunction, MetaFunction } from "@remix-run/node";
+import type {
+  LinksFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -6,9 +10,11 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 import stylesheet from "~/tailwind.css";
 import { Header } from "./components/Header";
+import { getUserId } from "./session.server";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -20,7 +26,14 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
+export const loader: LoaderFunction = async ({ request }) => {
+  const userId = await getUserId(request);
+  return userId ?? null;
+};
+
 export default function App() {
+  const userId = useLoaderData();
+
   return (
     <html lang="en">
       <head>
@@ -28,7 +41,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Header />
+        <Header userId={userId} />
         <Outlet />
         <ScrollRestoration />
         <Scripts />
