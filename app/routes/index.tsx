@@ -44,7 +44,6 @@ export default function Index() {
   //   </div>
   // );
   const search = useLoaderData();
-  console.log("search", search);
   return (
     <>
       <main className="relative h-full w-full flex flex-col items-center bg-white">
