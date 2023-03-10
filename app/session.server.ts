@@ -1,10 +1,80 @@
-import { createCookieSessionStorage, redirect } from "@remix-run/node";
+import {
+  createCookieSessionStorage,
+  createSessionStorage,
+  redirect,
+} from "@remix-run/node";
 import invariant from "tiny-invariant";
 
 import type { User } from "~/domain/User/user.server";
 import { getUserById } from "~/domain/User/user.server";
+import { prisma } from "~/db.server";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
+
+function createDatabaseSessionStorage({ cookie, host, port }: any) {
+  return createSessionStorage({
+    cookie,
+    async createData(data, expires) {
+      // `expires` is a Date after which the data should be considered
+      // invalid. You could use it to invalidate the data somehow or
+      // automatically purge this record from your database.
+      const { id } = await prisma.session.create({
+        data: {
+          userId: data.userId,
+          content: cookie,
+        },
+      });
+      return id;
+    },
+    async readData(id) {
+      return (await prisma.session.findUnique({ where: { id } })) || null;
+    },
+    async updateData(id, data, expires) {
+      await prisma.session.update({ where: { id }, data });
+    },
+    async deleteData(id) {
+      await prisma.session.delete({ where: { id } });
+    },
+  });
+}
+
+export const {
+  getSession: testGetSession,
+  commitSession: testCommitSession,
+  destroySession,
+} = createDatabaseSessionStorage({
+  host: "localhost",
+  port: 3000,
+  cookie: {
+    name: "__session",
+    sameSite: "lax",
+  },
+});
+
+export async function testCreateUserSession({
+  request,
+  userId,
+  remember,
+  redirectTo,
+}: {
+  request: Request;
+  userId: string;
+  remember: boolean;
+  redirectTo: string;
+}) {
+  const session = await testGetSession(request.headers.get("Cookie"));
+  session.set(USER_SESSION_KEY, userId);
+  // TODO add session to DB ?
+  return redirect(redirectTo, {
+    headers: {
+      "Set-Cookie": await testCommitSession(session, {
+        maxAge: remember
+          ? 60 * 60 * 24 * 7 // 7 days
+          : undefined,
+      }),
+    },
+  });
+}
 
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
@@ -76,7 +146,6 @@ export async function createUserSession({
 }) {
   const session = await getSession(request);
   session.set(USER_SESSION_KEY, userId);
-  // TODO add session to DB ? 
   return redirect(redirectTo, {
     headers: {
       "Set-Cookie": await sessionStorage.commitSession(session, {
@@ -90,7 +159,6 @@ export async function createUserSession({
 
 export async function logout(request: Request) {
   const session = await getSession(request);
-  // TODO delete session from DB ?
   return redirect("/", {
     headers: {
       "Set-Cookie": await sessionStorage.destroySession(session),
