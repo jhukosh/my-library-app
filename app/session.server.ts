@@ -76,6 +76,7 @@ export async function createUserSession({
 }) {
   const session = await getSession(request);
   session.set(USER_SESSION_KEY, userId);
+  // TODO add session to DB ? 
   return redirect(redirectTo, {
     headers: {
       "Set-Cookie": await sessionStorage.commitSession(session, {
@@ -89,6 +90,7 @@ export async function createUserSession({
 
 export async function logout(request: Request) {
   const session = await getSession(request);
+  // TODO delete session from DB ?
   return redirect("/", {
     headers: {
       "Set-Cookie": await sessionStorage.destroySession(session),
