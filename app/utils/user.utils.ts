@@ -1,7 +1,7 @@
 import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
 
-import type { User } from "~/domain/User/user.server";
+import type { User } from "~/domain/user/user.server";
 
 /**
  * This base hook is used in other hooks to quickly search for specific data
@@ -26,7 +26,7 @@ function isUser(user: any): user is User {
 
 export function useOptionalUser(): User | undefined {
   const data = useMatchesData("root");
-  console.log("data", data)
+  console.log("data", data);
   if (!data || !isUser(data.user)) {
     return undefined;
   }
