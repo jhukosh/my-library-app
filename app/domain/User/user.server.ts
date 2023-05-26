@@ -34,10 +34,9 @@ export async function deleteUserByEmail(email: User["email"]) {
 }
 
 export async function verifyLogin(email: User["email"], password: string) {
-  // TODO check why include had error ?
   const userWithPassword = await prisma.user.findUnique({
     where: { email },
-    select: { password: true, email: true },
+    select: { password: true, email: true, id: true },
   });
 
   if (!userWithPassword || !userWithPassword.password) {
