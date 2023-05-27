@@ -1,8 +1,8 @@
 import { createSessionStorage, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
-import type { User } from "~/domain/user/user.server";
-import { getUserById } from "~/domain/user/user.server";
+import type { User } from "~/server/user/user.server";
+import { getUserById } from "~/server/user/user.server";
 import { prisma } from "~/db.server";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");

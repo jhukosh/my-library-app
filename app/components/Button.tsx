@@ -2,9 +2,10 @@ type ButtonProps = {
   theme: "dark" | "light";
   type?: "button" | "submit" | "reset";
   text: string;
+  onClick?: () => void;
 };
 
-export const Button = ({ type, text, theme }: ButtonProps) => {
+export const Button = ({ type, text, theme, onClick }: ButtonProps) => {
   const classname = `flex items-center justify-center rounded px-4 py-2 h-full w-full ${
     theme === "light"
       ? "bg-white text-slate-600 hover:bg-cyan-50 hover:text-cyan-700"
@@ -12,7 +13,7 @@ export const Button = ({ type, text, theme }: ButtonProps) => {
   }`;
 
   return (
-    <button type={type} className={classname}>
+    <button type={type} className={classname} onClick={onClick}>
       {text}
     </button>
   );
