@@ -5,9 +5,13 @@ export class UserBook {
   id: string;
   externalBookId: string;
   userId: string;
-  review?: string;
+  review: string | null;
 
-  private constructor(externalBookId: string, userId: string, review?: string) {
+  private constructor(
+    externalBookId: string,
+    userId: string,
+    review: string | null
+  ) {
     this.externalBookId = externalBookId;
     this.userId = userId;
     this.review = review;
@@ -19,6 +23,6 @@ export class UserBook {
     userId: string,
     review?: string
   ): UserBook {
-    return new UserBook(externalBookId, userId, review);
+    return new UserBook(externalBookId, userId, review ?? null);
   }
 }

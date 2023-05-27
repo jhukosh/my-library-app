@@ -5,9 +5,16 @@ import { Button } from "~/components/Button";
 import { Book } from "~/domain/book/Book";
 import { getBookById } from "~/domain/book/BookPublicApi";
 import NoBookFound from "~/assets/no-book-found.jpeg";
-import { createUserBook } from "~/server/userBook/userBook.server";
+import {
+  createUserBook,
+  findOneByUserId,
+  getByUserId,
+} from "~/server/userBook/userBook.server";
 import { getUserId } from "~/session.server";
 import { ActionFunction, LoaderArgs } from "@remix-run/node";
+import { UserBook } from "~/domain/userBook/userBook";
+
+let userBook: UserBook | null;
 
 export const loader: LoaderFunction = async ({
   params,
@@ -16,21 +23,27 @@ export const loader: LoaderFunction = async ({
   invariant(params.bookId, "Book id is required");
   const book = await getBookById(params.bookId);
   const userId = await getUserId(request);
-  return { book, userId };
+  userBook = await findOneByUserId(userId, book.id);
+  return { book, userBook };
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
   invariant(params.bookId, "Book id is required");
   const userId = await getUserId(request);
-  if (userId) return createUserBook(params.bookId, userId);
-  console.error('User Id not provided');
+  if (userId != null) return createUserBook(params.bookId, userId);
+  console.error("User Id not provided");
   return null;
 };
 
 export default function BookDetailsPage() {
   // TODO fallback in no book fetched
-  const { book, userId } = useLoaderData();
+  const { book, userBook } = useLoaderData();
   const imgPath = book.volumeInfo.imageLinks?.thumbnail ?? NoBookFound;
+
+  const deleteUserBook = async () =>
+    await fetch("http://localhost:3000/api/userBook/remove", {
+      method: "DELETE",
+    });
 
   return (
     <div className="p-16 flex flex-row">
@@ -49,13 +62,19 @@ export default function BookDetailsPage() {
           </h4>
           <div>{book.volumeInfo.description}</div>
         </div>
-        <Form method="post" className="h-14 text-lg">
-          <Button
-            type="submit"
-            theme="dark"
-            text="Add to my books"
-          />
-        </Form>
+        {userBook == null ? (
+          <Form method="post" className="h-14 text-lg">
+            <Button type="submit" theme="dark" text="Add to my books" />
+          </Form>
+        ) : (
+          <Form
+            method="post"
+            className="h-14 text-lg"
+            action={`/api/userBook/${book.id}/delete`}
+          >
+            <Button type="submit" theme="dark" text="Delete from my books" />
+          </Form>
+        )}
       </div>
     </div>
   );
