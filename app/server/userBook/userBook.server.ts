@@ -1,7 +1,7 @@
 import { prisma } from "~/db.server";
 import { UserBook } from "~/domain/userBook/userBook";
 
-export async function createUserBook(externalBookId: string, userId: string) {
+export const createUserBook = async (externalBookId: string, userId: string) => {
   const newUserBook = UserBook.create(externalBookId, userId);
   return prisma.userBook.create({
     data: newUserBook,

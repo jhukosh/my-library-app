@@ -11,6 +11,10 @@ import {
 import { getUserId } from "~/session.server";
 import { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { MyBookForm } from "./components/MyBookForm";
+import { findOneByUserBookId } from "~/server/review/review.server";
+import { Book } from "~/domain/book/Book";
+import { UserBook } from "~/domain/userBook/userBook";
+import { Review } from "~/domain/review/review";
 
 export const loader: LoaderFunction = async ({
   params,
@@ -20,7 +24,8 @@ export const loader: LoaderFunction = async ({
   const book = await getBookById(params.bookId);
   const userId = await getUserId(request);
   const userBook = await findOneByUserId(userId, book.id);
-  return { book, userBook };
+  const review = await findOneByUserBookId(userBook?.id ?? undefined);
+  return { book, userBook, review };
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -33,7 +38,11 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 export default function BookDetailsPage() {
   // TODO fallback in no book fetched
-  const { book, userBook } = useLoaderData();
+  const { book, userBook, review } = useLoaderData<{
+    book: Book;
+    userBook: UserBook;
+    review: Review;
+  }>();
   const imgPath = book.volumeInfo.imageLinks?.thumbnail ?? NoBookFound;
 
   return (
@@ -59,7 +68,12 @@ export default function BookDetailsPage() {
           </Form>
         ) : (
           <>
-            <MyBookForm isRead={userBook.isRead} review="" bookId={book.id} />
+            <MyBookForm
+              isRead={userBook.isRead}
+              review={review}
+              bookId={book.id}
+              userBookId={userBook.id}
+            />
             <Form
               method="post"
               className="h-14 text-lg"

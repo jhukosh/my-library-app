@@ -5,18 +5,15 @@ export class UserBook {
   id: string;
   externalBookId: string;
   userId: string;
-  reviewId: string | null;
   isRead: boolean;
 
   private constructor(
     externalBookId: string,
     userId: string,
-    reviewId: string | null = null, 
     isRead = false
   ) {
     this.externalBookId = externalBookId;
     this.userId = userId;
-    this.reviewId = reviewId;
     this.id = uuidv4();
     this.isRead = isRead
   }

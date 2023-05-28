@@ -42,26 +42,27 @@ model User {
 }
 
 model UserBook {
-  id             String   @id
+  id             String @id
   externalBookId String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user           User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId         String
-  review         Review?  @relation(fields: [reviewId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  reviewId       String?
-  isRead         Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  review    Review[]
 
   @@unique([userId, externalBookId])
 }
 
 model Review {
-  id             String     @id @default(uuid())
+  id             String   @id @default(uuid())
   title          String
   description    String
   rating         Int?
   externalBookId String
-  isPublic       Boolean    @default(false)
-  createdAt      DateTime   @default(now())
-  userBook       UserBook[]
+  isPublic       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  userBook       UserBook @relation(fields: [userBookId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userBookId     String   @unique
 }
