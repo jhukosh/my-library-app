@@ -1,12 +1,8 @@
 import { prisma } from "~/db.server";
-import { UserBook as UserBookDomain } from "~/domain/userBook/userBook";
+import { UserBook } from "~/domain/userBook/userBook";
 
-export async function createUserBook(
-  externalBookId: string,
-  userId: string,
-  review?: string
-) {
-  const newUserBook = UserBookDomain.create(externalBookId, userId, review);
+export async function createUserBook(externalBookId: string, userId: string) {
+  const newUserBook = UserBook.create(externalBookId, userId);
   return prisma.userBook.create({
     data: newUserBook,
   });
@@ -33,5 +29,16 @@ export const deleteUserBook = async (
 ) => {
   return prisma.userBook.delete({
     where: { userId_externalBookId: { userId, externalBookId } },
+  });
+};
+
+export const toggleIsRead = (
+  userId: string,
+  externalBookId: string,
+  isRead: boolean
+) => {
+  return prisma.userBook.update({
+    where: { userId_externalBookId: { userId, externalBookId } },
+    data: { isRead },
   });
 };

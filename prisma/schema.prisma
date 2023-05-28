@@ -11,44 +11,57 @@ datasource db {
 }
 
 model Book {
-  id        String   @id @default(uuid())
-  title      String
+  id          String   @id @default(uuid())
+  title       String
   description String
-  author String
-  publisher String
-  year Int
-  read Boolean
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  author      String
+  publisher   String
+  year        Int
+  read        Boolean
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Session {
-  id String @id @default(uuid())
-  content String
+  id        String   @id @default(uuid())
+  content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId    String
 }
 
 model User {
-  id String @id @default(uuid())
-  createdAt DateTime @default(now())
-  name String
-  email String @unique
-  password String
-  sessions Session[]
-  userBook UserBook[]
+  id        String     @id @default(uuid())
+  createdAt DateTime   @default(now())
+  name      String
+  email     String     @unique
+  password  String
+  sessions  Session[]
+  userBook  UserBook[]
 }
 
 model UserBook {
-  id String @id
+  id             String   @id
   externalBookId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String
-  review String?
-  read Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId         String
+  review         Review?  @relation(fields: [reviewId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  reviewId       String?
+  isRead         Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
   @@unique([userId, externalBookId])
+}
+
+model Review {
+  id             String     @id @default(uuid())
+  title          String
+  description    String
+  rating         Int?
+  externalBookId String
+  isPublic       Boolean    @default(false)
+  createdAt      DateTime   @default(now())
+  userBook       UserBook[]
 }

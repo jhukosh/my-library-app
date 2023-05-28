@@ -5,24 +5,26 @@ export class UserBook {
   id: string;
   externalBookId: string;
   userId: string;
-  review: string | null;
+  reviewId: string | null;
+  isRead: boolean;
 
   private constructor(
     externalBookId: string,
     userId: string,
-    review: string | null
+    reviewId: string | null = null, 
+    isRead = false
   ) {
     this.externalBookId = externalBookId;
     this.userId = userId;
-    this.review = review;
+    this.reviewId = reviewId;
     this.id = uuidv4();
+    this.isRead = isRead
   }
 
   static create(
     externalBookId: string,
     userId: string,
-    review?: string
   ): UserBook {
-    return new UserBook(externalBookId, userId, review ?? null);
+    return new UserBook(externalBookId, userId);
   }
 }
