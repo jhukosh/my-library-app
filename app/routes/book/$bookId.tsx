@@ -43,11 +43,19 @@ export default function BookDetailsPage() {
     book: Book;
     userBook: UserBook;
     review: Review;
-    userId: string
+    userId: string;
   }>();
   const imgPath = book.volumeInfo.imageLinks?.thumbnail ?? NoBookFound;
-  const { setShowModal } = useUserConnexionModalContext();
+  const { setShowModal, setText, setRedirectUrl } =
+    useUserConnexionModalContext();
   const fetcher = useFetcher();
+
+  // TODO add book to my lib after redirection
+
+  setText(
+    "You need to create an account to add a book to your library. If you already have an account, you can log in."
+  );
+  setRedirectUrl(`/book/${book.id}`);
 
   return (
     <div className="p-16 flex flex-row">

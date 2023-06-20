@@ -1,6 +1,7 @@
 import { ActionArgs, json } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import React from "react";
+import { useUserConnexionModalContext } from "~/contexts/UserConnexionModalContext";
 import { getUserByEmail, verifyLogin } from "~/server/user/user.server";
 import { createUserSession } from "~/session.server";
 import { safeRedirect } from "~/utils/redirect.utils";
@@ -44,8 +45,6 @@ export async function action({ request }: ActionArgs) {
 
   const user = await verifyLogin(email, password);
 
-  console.log("user", user);
-
   if (!user) {
     return json<ActionData>(
       { errors: { email: "Invalid email or password" } },
@@ -66,8 +65,11 @@ const Login = () => {
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
+  const { redirectUrl } =
+    useUserConnexionModalContext();
+
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? undefined;
+  const redirectTo = redirectUrl ?? searchParams.get("redirectTo") ?? undefined;
 
   return (
     <div className="flex min-h-full flex-col justify-center">
