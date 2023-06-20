@@ -2,10 +2,14 @@ import { createContext, useContext, useState } from "react";
 import { Modal } from "~/components/Modal";
 
 type UserConnexionModalContextType = {
-  setShowModal: (show: boolean) => void;
-  setText: (text: string) => void;
-  setRedirectUrl: (url: string) => void;
+  handleOpenModal: (
+    redirectUrl: string,
+    text: string,
+    triggerAction: boolean
+  ) => void;
   redirectUrl: string;
+  triggerAction: boolean;
+  setTriggerAction: (triggerAction: boolean) => void;
 };
 
 const UserConnexionModalContext = createContext(
@@ -19,16 +23,30 @@ export const UserConnexionModalContextProvider = ({ children }: any) => {
   const [showModal, setShowModal] = useState(false);
   const [text, setText] = useState("Connectez-vous ou créer un compte");
   const [redirectUrl, setRedirectUrl] = useState("");
+  const [triggerAction, setTriggerAction] = useState(false);
+
+  const handleOpenModal = (redirectUrl: string, text: string, triggerAction: boolean) => {
+    setRedirectUrl(redirectUrl);
+    setText(text);
+    setTriggerAction(triggerAction)
+    setShowModal(true);
+  };
+
+  const onModalClose = () => {
+    setShowModal(false);
+    setTriggerAction(false);
+  }
 
   return (
     <UserConnexionModalContext.Provider
-      value={{ setShowModal, setText, setRedirectUrl, redirectUrl }}
+      value={{ handleOpenModal, redirectUrl, triggerAction, setTriggerAction }}
     >
       {children}
       <Modal
         show={showModal}
         handleClose={() => setShowModal(false)}
         text={text}
+        onModalClose={onModalClose}
       />
     </UserConnexionModalContext.Provider>
   );

@@ -5,9 +5,15 @@ type ModalProps = {
   show: boolean;
   handleClose: () => void;
   text: string;
+  onModalClose: () => void;
 };
 
-export const Modal = ({ show, handleClose, text }: ModalProps) => {
+export const Modal = ({
+  show,
+  handleClose,
+  text,
+  onModalClose,
+}: ModalProps) => {
   if (!show) return null;
 
   return (
@@ -17,7 +23,7 @@ export const Modal = ({ show, handleClose, text }: ModalProps) => {
           <button
             className="self-end bg-slate-400 text-2xl rounded-full text-white w-8 h-8 hover:bg-slate-200"
             type="button"
-            onClick={handleClose}
+            onClick={onModalClose}
           >
             X
           </button>

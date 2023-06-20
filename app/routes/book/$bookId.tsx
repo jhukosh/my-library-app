@@ -1,21 +1,27 @@
-import { Form, useLoaderData, useFetcher } from "@remix-run/react";
+import {
+  Form,
+  useLoaderData,
+  useFetcher,
+  useSubmit,
+  useNavigate,
+} from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/Button";
 import { getBookById } from "~/domain/book/BookPublicApi";
 import NoBookFound from "~/assets/no-book-found.jpeg";
 import {
-  createUserBook,
   findOneByUserId,
 } from "~/server/userBook/userBook.server";
 import { getUserId } from "~/session.server";
-import { ActionFunction, LoaderArgs } from "@remix-run/node";
+import { LoaderArgs } from "@remix-run/node";
 import { MyBookForm } from "./components/MyBookForm";
 import { findOneByUserBookId } from "~/server/review/review.server";
 import { Book } from "~/domain/book/Book";
 import { UserBook } from "~/domain/userBook/userBook";
 import { Review } from "~/domain/review/review";
 import { useUserConnexionModalContext } from "~/contexts/UserConnexionModalContext";
+import { useEffect } from "react";
 
 export const loader: LoaderFunction = async ({
   params,
@@ -29,14 +35,6 @@ export const loader: LoaderFunction = async ({
   return { book, userBook, review, userId };
 };
 
-export const action: ActionFunction = async ({ request, params }) => {
-  invariant(params.bookId, "Book id is required");
-  const userId = await getUserId(request);
-  if (userId != null) return createUserBook(params.bookId, userId);
-  console.error("User Id not provided");
-  return null;
-};
-
 export default function BookDetailsPage() {
   // TODO fallback in no book fetched
   const { book, userBook, review, userId } = useLoaderData<{
@@ -46,16 +44,22 @@ export default function BookDetailsPage() {
     userId: string;
   }>();
   const imgPath = book.volumeInfo.imageLinks?.thumbnail ?? NoBookFound;
-  const { setShowModal, setText, setRedirectUrl } =
+  const { handleOpenModal, triggerAction, setTriggerAction } =
     useUserConnexionModalContext();
   const fetcher = useFetcher();
 
-  // TODO add book to my lib after redirection
-
-  setText(
-    "You need to create an account to add a book to your library. If you already have an account, you can log in."
-  );
-  setRedirectUrl(`/book/${book.id}`);
+  useEffect(() => {
+    const createUserBookAction = () => {
+      setTriggerAction(false);
+      fetcher.submit(null, {
+        method: "post",
+        action: `/api/userBook/${book.id}/create`,
+      });
+    };
+    if (triggerAction) {
+      createUserBookAction();
+    }
+  }, []);
 
   return (
     <div className="p-16 flex flex-row">
@@ -80,10 +84,17 @@ export default function BookDetailsPage() {
               type="button"
               theme="dark"
               text="Add to my books"
-              onClick={(e) => {
+              onClick={() => {
                 userId != null
-                  ? fetcher.submit(e.currentTarget)
-                  : setShowModal(true);
+                  ? fetcher.submit(null, {
+                      method: "post",
+                      action: `/api/userBook/${book.id}/create`,
+                    })
+                  : handleOpenModal(
+                      `/book/${book.id}`,
+                      "You need to create an account to add a book to your library. If you already have an account, you can log in.",
+                      true
+                    );
               }}
             />
           </Form>
