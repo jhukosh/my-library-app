@@ -8,6 +8,8 @@ import { createUserSession, getUserId } from "~/session.server";
 import { createUser, getUserByEmail } from "~/server/user/user.server";
 import { useUserConnexionModalContext } from "~/contexts/UserConnexionModalContext";
 import { Button } from "~/components/Button";
+import { safeRedirect } from "~/utils/redirect.utils";
+import { useEffect } from "react";
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request);
@@ -21,11 +23,9 @@ export async function action({ request }: ActionArgs) {
   const password = formData.get("password");
   const name = formData.get("name");
 
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? "/";
-  console.log("heeeere", email);
+  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
+
   if (typeof email !== "string" || email.length <= 3 || !email.includes("@")) {
-    console.log("heeeere");
     return json(
       { errors: { email: "Email is invalid", password: null, name: null } },
       { status: 400 }
@@ -95,7 +95,7 @@ const Join = () => {
   const passwordRef = React.useRef<HTMLInputElement>(null);
   const nameRef = React.useRef<HTMLInputElement>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (actionData?.errors?.email) {
       emailRef.current?.focus();
     } else if (actionData?.errors?.password) {
@@ -110,6 +110,28 @@ const Join = () => {
       </h2>
       <div className="mx-auto w-full max-w-md px-8">
         <Form method="post" className="space-y-6" noValidate>
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium">
+              Name
+            </label>
+            <div className="mt-1">
+              <input
+                id="name"
+                ref={nameRef}
+                name="name"
+                type="input"
+                aria-invalid={actionData?.errors?.name ? true : undefined}
+                aria-describedby="password-error"
+                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+              />
+              {actionData?.errors?.name && (
+                <div className="pt-1 text-red-700" id="password-error">
+                  {actionData.errors.name}
+                </div>
+              )}
+            </div>
+          </div>
+
           <div>
             <label htmlFor="email" className="block text-sm font-medium">
               Email address
@@ -158,37 +180,15 @@ const Join = () => {
             </div>
           </div>
 
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium">
-              Name
-            </label>
-            <div className="mt-1">
-              <input
-                id="name"
-                ref={nameRef}
-                name="name"
-                type="input"
-                aria-invalid={actionData?.errors?.name ? true : undefined}
-                aria-describedby="password-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-              />
-              {actionData?.errors?.name && (
-                <div className="pt-1 text-red-700" id="password-error">
-                  {actionData.errors.name}
-                </div>
-              )}
-            </div>
-          </div>
-
           <input type="hidden" name="redirectTo" value={redirectTo} />
 
           <Button type="submit" text="Create Account" theme="dark" />
 
           <div className="flex items-center justify-center">
             <div className="text-center text-sm text-gray-500">
-              Already have an account?{" "}
+              Already have an account ?{" "}
               <Link
-                className="text-blue-500 underline"
+                className="text-cyan-700 underline"
                 to={{
                   pathname: "/login",
                   search: searchParams.toString(),

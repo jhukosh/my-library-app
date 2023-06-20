@@ -74,13 +74,13 @@ const Login = () => {
 
   return (
     <div className="flex min-h-full flex-col justify-center text-slate-600">
+      <h2 className="self-center m-6 text-2xl font-semibold">
+        Connect to your account
+      </h2>
       <div className="mx-auto w-full max-w-md px-8">
         <Form method="post" className="space-y-6" noValidate>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="email" className="block text-sm font-medium">
               Email address
             </label>
             <div className="mt-1">
@@ -105,10 +105,7 @@ const Login = () => {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="password" className="block text-sm font-medium">
               Password
             </label>
             <div className="mt-1">
@@ -138,7 +135,7 @@ const Login = () => {
             <div className="text-center text-sm text-gray-500">
               No account yet ?{" "}
               <Link
-                className="text-blue-500 underline"
+                className="text-cyan-700 underline"
                 to={{
                   pathname: "/join",
                   search: searchParams.toString(),
