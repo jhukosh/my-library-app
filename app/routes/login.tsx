@@ -1,8 +1,9 @@
 import { ActionArgs, json } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import React from "react";
+import { Button } from "~/components/Button";
 import { useUserConnexionModalContext } from "~/contexts/UserConnexionModalContext";
-import { getUserByEmail, verifyLogin } from "~/server/user/user.server";
+import { verifyLogin } from "~/server/user/user.server";
 import { createUserSession } from "~/session.server";
 import { safeRedirect } from "~/utils/redirect.utils";
 
@@ -72,13 +73,13 @@ const Login = () => {
   const redirectTo = redirectUrl ?? searchParams.get("redirectTo") ?? undefined;
 
   return (
-    <div className="flex min-h-full flex-col justify-center">
+    <div className="flex min-h-full flex-col justify-center text-slate-600">
       <div className="mx-auto w-full max-w-md px-8">
         <Form method="post" className="space-y-6" noValidate>
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium"
             >
               Email address
             </label>
@@ -106,7 +107,7 @@ const Login = () => {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium"
             >
               Password
             </label>
@@ -130,12 +131,9 @@ const Login = () => {
           </div>
 
           <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button
-            type="submit"
-            className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-          >
-            Login
-          </button>
+
+          <Button type="submit" text="Login" theme="dark" />
+
           <div className="flex items-center justify-center">
             <div className="text-center text-sm text-gray-500">
               No account yet ?{" "}

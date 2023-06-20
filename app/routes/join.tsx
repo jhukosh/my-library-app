@@ -6,7 +6,8 @@ import * as React from "react";
 import { createUserSession, getUserId } from "~/session.server";
 
 import { createUser, getUserByEmail } from "~/server/user/user.server";
-import { safeRedirect } from "~/utils/redirect.utils";
+import { useUserConnexionModalContext } from "~/contexts/UserConnexionModalContext";
+import { Button } from "~/components/Button";
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request);
@@ -19,9 +20,12 @@ export async function action({ request }: ActionArgs) {
   const email = formData.get("email");
   const password = formData.get("password");
   const name = formData.get("name");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
 
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo") ?? "/";
+  console.log("heeeere", email);
   if (typeof email !== "string" || email.length <= 3 || !email.includes("@")) {
+    console.log("heeeere");
     return json(
       { errors: { email: "Email is invalid", password: null, name: null } },
       { status: 400 }
@@ -82,8 +86,10 @@ export const meta: MetaFunction = () => {
 };
 
 const Join = () => {
+  const { redirectUrl } = useUserConnexionModalContext();
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? undefined;
+  const redirectTo = redirectUrl ?? searchParams.get("redirectTo") ?? undefined;
+
   const actionData = useActionData<typeof action>();
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
@@ -98,14 +104,14 @@ const Join = () => {
   }, [actionData]);
 
   return (
-    <div className="flex min-h-full flex-col justify-center">
+    <div className="flex min-h-full flex-col justify-center text-slate-600">
+      <h2 className="self-center m-6 text-2xl font-semibold">
+        Account creation
+      </h2>
       <div className="mx-auto w-full max-w-md px-8">
         <Form method="post" className="space-y-6" noValidate>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="email" className="block text-sm font-medium">
               Email address
             </label>
             <div className="mt-1">
@@ -130,10 +136,7 @@ const Join = () => {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="password" className="block text-sm font-medium">
               Password
             </label>
             <div className="mt-1">
@@ -156,10 +159,7 @@ const Join = () => {
           </div>
 
           <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="name" className="block text-sm font-medium">
               Name
             </label>
             <div className="mt-1">
@@ -181,12 +181,9 @@ const Join = () => {
           </div>
 
           <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button
-            type="submit"
-            className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-          >
-            Create Account
-          </button>
+
+          <Button type="submit" text="Create Account" theme="dark" />
+
           <div className="flex items-center justify-center">
             <div className="text-center text-sm text-gray-500">
               Already have an account?{" "}
