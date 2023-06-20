@@ -1,4 +1,4 @@
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData, useFetcher } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/Button";
@@ -15,6 +15,7 @@ import { findOneByUserBookId } from "~/server/review/review.server";
 import { Book } from "~/domain/book/Book";
 import { UserBook } from "~/domain/userBook/userBook";
 import { Review } from "~/domain/review/review";
+import { useUserConnexionModalContext } from "~/contexts/UserConnexionModalContext";
 
 export const loader: LoaderFunction = async ({
   params,
@@ -25,7 +26,7 @@ export const loader: LoaderFunction = async ({
   const userId = await getUserId(request);
   const userBook = await findOneByUserId(userId, book.id);
   const review = await findOneByUserBookId(userBook?.id ?? undefined);
-  return { book, userBook, review };
+  return { book, userBook, review, userId };
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -38,12 +39,15 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 export default function BookDetailsPage() {
   // TODO fallback in no book fetched
-  const { book, userBook, review } = useLoaderData<{
+  const { book, userBook, review, userId } = useLoaderData<{
     book: Book;
     userBook: UserBook;
     review: Review;
+    userId: string
   }>();
   const imgPath = book.volumeInfo.imageLinks?.thumbnail ?? NoBookFound;
+  const { setShowModal } = useUserConnexionModalContext();
+  const fetcher = useFetcher();
 
   return (
     <div className="p-16 flex flex-row">
@@ -64,7 +68,16 @@ export default function BookDetailsPage() {
         </div>
         {userBook == null ? (
           <Form method="post" className="h-14 text-lg">
-            <Button type="submit" theme="dark" text="Add to my books" />
+            <Button
+              type="button"
+              theme="dark"
+              text="Add to my books"
+              onClick={(e) => {
+                userId != null
+                  ? fetcher.submit(e.currentTarget)
+                  : setShowModal(true);
+              }}
+            />
           </Form>
         ) : (
           <>

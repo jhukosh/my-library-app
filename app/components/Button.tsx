@@ -2,7 +2,7 @@ type ButtonProps = {
   theme: "dark" | "light";
   type?: "button" | "submit" | "reset";
   text: string;
-  onClick?: () => void;
+  onClick?: (e?: any) => void;
 };
 
 export const Button = ({ type, text, theme, onClick }: ButtonProps) => {

@@ -15,6 +15,7 @@ import {
 import stylesheet from "~/tailwind.css";
 import { Header } from "./components/Header";
 import { getUserId } from "./session.server";
+import { UserConnexionModalContextProvider } from "./contexts/UserConnexionModalContext";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -42,7 +43,9 @@ export default function App() {
       </head>
       <body>
         <Header userId={userId} />
-        <Outlet />
+        <UserConnexionModalContextProvider>
+          <Outlet />
+        </UserConnexionModalContextProvider>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
