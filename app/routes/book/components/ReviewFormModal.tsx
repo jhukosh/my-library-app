@@ -26,9 +26,9 @@ export const ReviewFormModal = ({
   if (!show) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 flex w-full  overflow-x-hidden overflow-y-hidden h-full max-h-full bg-slate-500/75">
-      <section className="relative w-full max-w-2xl max-h-full top-32 left-1/3 ">
-        <div className="relative bg-white rounded-lg shadow p-6 w-full flex flex-col gap-4 text-slate-600">
+    <div className="fixed top-0 left-0 right-0 z-50 flex w-full overflow-x-hidden overflow-y-hidden h-full max-h-full bg-slate-500/75">
+      <section className="relative w-full sm:w-2/4 sm:max-w-2/4 h-screen sm:max-h-full sm:top-32 sm:left-1/4">
+        <div className="relative bg-white rounded-lg shadow p-6 w-full h-full flex flex-col gap-4 text-slate-600">
           <button
             className="self-end bg-slate-400 text-2xl rounded-full text-white w-8 h-8 hover:bg-slate-200"
             type="button"
@@ -36,7 +36,7 @@ export const ReviewFormModal = ({
           >
             X
           </button>
-          
+
           <h3 className="self-start text-slate-500 text-xl">
             What did you think of this book ?
           </h3>

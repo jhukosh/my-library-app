@@ -25,7 +25,7 @@ export const UserBookReview = ({
       <div className="px-16 py-8 border-t">
         {isRead ? (
           <div className="flex w-full justify-center gap-4 items-center">
-            <h3 className="text-lg">
+            <h3 className="text-lg font-bold text-slate-800">
               {review == null ? "No Review yet" : "Your review"}
             </h3>
 
@@ -47,7 +47,7 @@ export const UserBookReview = ({
 
         {review != null ? (
           <div className="flex flex-col gap-4 my-6 px-16">
-            <h4 className="text-lg text-slate-500">{review.title}</h4>
+            <h4 className="text-lg text-slate-500 border-b border-dashed">{review.title}</h4>
             <p className="text-sm text-slate-500">{review.description}</p>
           </div>
         ) : null}
