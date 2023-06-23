@@ -15,6 +15,7 @@ import {
 import stylesheet from "~/tailwind.css";
 import { Header } from "./components/Header";
 import { getUserId } from "./session.server";
+import { UserConnexionModalContextProvider } from "./contexts/UserConnexionModalContext";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -28,11 +29,11 @@ export const meta: MetaFunction = () => ({
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getUserId(request);
-  return userId ?? null;
+  return { userId } ?? null;
 };
 
 export default function App() {
-  const userId = useLoaderData();
+  const {userId} = useLoaderData();
 
   return (
     <html lang="en">
@@ -42,7 +43,9 @@ export default function App() {
       </head>
       <body>
         <Header userId={userId} />
-        <Outlet />
+        <UserConnexionModalContextProvider>
+          <Outlet />
+        </UserConnexionModalContextProvider>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

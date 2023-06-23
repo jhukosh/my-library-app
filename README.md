@@ -45,3 +45,7 @@ Make sure to deploy the output of `remix build`
 - To list relations : `\dt`
 - To list items of relation : `SELECT * FROM "User";`
 - Account to test : `julhu@fake.io` / `password95`;
+
+### Prisma migration 
+
+- npx Prisma migrate dev --name <migration-name>

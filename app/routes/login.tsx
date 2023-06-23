@@ -1,7 +1,9 @@
 import { ActionArgs, json } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import React from "react";
-import { getUserByEmail, verifyLogin } from "~/domain/user/user.server";
+import { Button } from "~/components/Button";
+import { useUserConnexionModalContext } from "~/contexts/UserConnexionModalContext";
+import { verifyLogin } from "~/server/user/user.server";
 import { createUserSession } from "~/session.server";
 import { safeRedirect } from "~/utils/redirect.utils";
 
@@ -44,8 +46,6 @@ export async function action({ request }: ActionArgs) {
 
   const user = await verifyLogin(email, password);
 
-  console.log("user", user);
-
   if (!user) {
     return json<ActionData>(
       { errors: { email: "Invalid email or password" } },
@@ -66,18 +66,21 @@ const Login = () => {
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
+  const { redirectUrl } =
+    useUserConnexionModalContext();
+
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? undefined;
+  const redirectTo = redirectUrl ?? searchParams.get("redirectTo") ?? undefined;
 
   return (
-    <div className="flex min-h-full flex-col justify-center">
+    <div className="flex min-h-full flex-col justify-center text-slate-600">
+      <h2 className="self-center m-6 text-2xl font-semibold">
+        Connect to your account
+      </h2>
       <div className="mx-auto w-full max-w-md px-8">
         <Form method="post" className="space-y-6" noValidate>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="email" className="block text-sm font-medium">
               Email address
             </label>
             <div className="mt-1">
@@ -102,10 +105,7 @@ const Login = () => {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="password" className="block text-sm font-medium">
               Password
             </label>
             <div className="mt-1">
@@ -128,17 +128,14 @@ const Login = () => {
           </div>
 
           <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button
-            type="submit"
-            className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-          >
-            Login
-          </button>
+
+          <Button type="submit" text="Login" theme="dark" />
+
           <div className="flex items-center justify-center">
             <div className="text-center text-sm text-gray-500">
               No account yet ?{" "}
               <Link
-                className="text-blue-500 underline"
+                className="text-cyan-700 underline"
                 to={{
                   pathname: "/join",
                   search: searchParams.toString(),

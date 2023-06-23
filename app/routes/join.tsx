@@ -5,8 +5,11 @@ import * as React from "react";
 
 import { createUserSession, getUserId } from "~/session.server";
 
-import { createUser, getUserByEmail } from "~/domain/user/user.server";
+import { createUser, getUserByEmail } from "~/server/user/user.server";
+import { useUserConnexionModalContext } from "~/contexts/UserConnexionModalContext";
+import { Button } from "~/components/Button";
 import { safeRedirect } from "~/utils/redirect.utils";
+import { useEffect } from "react";
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request);
@@ -19,6 +22,7 @@ export async function action({ request }: ActionArgs) {
   const email = formData.get("email");
   const password = formData.get("password");
   const name = formData.get("name");
+
   const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
 
   if (typeof email !== "string" || email.length <= 3 || !email.includes("@")) {
@@ -82,14 +86,16 @@ export const meta: MetaFunction = () => {
 };
 
 const Join = () => {
+  const { redirectUrl } = useUserConnexionModalContext();
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? undefined;
+  const redirectTo = redirectUrl ?? searchParams.get("redirectTo") ?? undefined;
+
   const actionData = useActionData<typeof action>();
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
   const nameRef = React.useRef<HTMLInputElement>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (actionData?.errors?.email) {
       emailRef.current?.focus();
     } else if (actionData?.errors?.password) {
@@ -98,14 +104,36 @@ const Join = () => {
   }, [actionData]);
 
   return (
-    <div className="flex min-h-full flex-col justify-center">
+    <div className="flex min-h-full flex-col justify-center text-slate-600">
+      <h2 className="self-center m-6 text-2xl font-semibold">
+        Account creation
+      </h2>
       <div className="mx-auto w-full max-w-md px-8">
         <Form method="post" className="space-y-6" noValidate>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="name" className="block text-sm font-medium">
+              Name
+            </label>
+            <div className="mt-1">
+              <input
+                id="name"
+                ref={nameRef}
+                name="name"
+                type="input"
+                aria-invalid={actionData?.errors?.name ? true : undefined}
+                aria-describedby="password-error"
+                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+              />
+              {actionData?.errors?.name && (
+                <div className="pt-1 text-red-700" id="password-error">
+                  {actionData.errors.name}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium">
               Email address
             </label>
             <div className="mt-1">
@@ -130,10 +158,7 @@ const Join = () => {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="password" className="block text-sm font-medium">
               Password
             </label>
             <div className="mt-1">
@@ -155,43 +180,15 @@ const Join = () => {
             </div>
           </div>
 
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Name
-            </label>
-            <div className="mt-1">
-              <input
-                id="name"
-                ref={nameRef}
-                name="name"
-                type="input"
-                aria-invalid={actionData?.errors?.name ? true : undefined}
-                aria-describedby="password-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-              />
-              {actionData?.errors?.name && (
-                <div className="pt-1 text-red-700" id="password-error">
-                  {actionData.errors.name}
-                </div>
-              )}
-            </div>
-          </div>
-
           <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button
-            type="submit"
-            className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-          >
-            Create Account
-          </button>
+
+          <Button type="submit" text="Create Account" theme="dark" />
+
           <div className="flex items-center justify-center">
             <div className="text-center text-sm text-gray-500">
-              Already have an account?{" "}
+              Already have an account ?{" "}
               <Link
-                className="text-blue-500 underline"
+                className="text-cyan-700 underline"
                 to={{
                   pathname: "/login",
                   search: searchParams.toString(),
