@@ -36,6 +36,7 @@ export const ReviewFormModal = ({
           >
             X
           </button>
+          
           <h3 className="self-start text-slate-500 text-xl">
             What did you think of this book ?
           </h3>

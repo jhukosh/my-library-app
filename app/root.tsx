@@ -29,11 +29,11 @@ export const meta: MetaFunction = () => ({
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getUserId(request);
-  return userId ?? null;
+  return { userId } ?? null;
 };
 
 export default function App() {
-  const userId = useLoaderData();
+  const {userId} = useLoaderData();
 
   return (
     <html lang="en">
